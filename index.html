@@ -702,18 +702,22 @@
       position: relative;
       overflow: hidden;
     }
-    .store-card::after {
-      content: 'COMING SOON';
-      position: absolute;
-      top: 20px;
-      right: -32px;
+    .store-card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .coming-soon-badge {
+      display: inline-block;
       background: var(--gold);
       color: var(--bg);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
-      padding: 4px 40px;
-      transform: rotate(45deg);
-      letter-spacing: 1px;
+      padding: 6px 20px;
+      border-radius: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
     .store-icon {
       font-size: 48px;
@@ -948,7 +952,7 @@
   <section class="section" id="canali">
     <div class="section-inner">
       <div class="section-label">Il Nostro Ecosistema</div>
-      <h2 class="section-title">Gi&agrave; ci conosci, ora ci portiamo in tasca</h2>
+      <h2 class="section-title">Gi&agrave; ci conosci, ora ci porti in tasca</h2>
       <p class="section-desc">
         Effetto Cinematografo &egrave; gi&agrave; presente su pi&ugrave; piattaforme. L'app nasce per completare l'esperienza: 
         pi&ugrave; veloce, pi&ugrave; comoda, sempre aggiornata.
@@ -1112,16 +1116,16 @@
       </p>
       <div class="stores-grid">
         <div class="store-card">
-          <div class="store-icon">&#127822;</div>
-          <h3>App Store</h3>
-          <p>Per iPhone e iPad</p>
-          <a href="#beta" class="store-notify">Avvisami al lancio</a>
+          <div class="store-card-content">
+            <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" style="height:50px;">
+            <span class="coming-soon-badge">COMING SOON</span>
+          </div>
         </div>
         <div class="store-card">
-          <div class="store-icon">&#9654;&#65039;</div>
-          <h3>Google Play</h3>
-          <p>Per dispositivi Android</p>
-          <a href="#beta" class="store-notify">Avvisami al lancio</a>
+          <div class="store-card-content">
+            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" style="height:60px;">
+            <span class="coming-soon-badge">COMING SOON</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1149,22 +1153,39 @@
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // Beta form handler
+    // Beta form handler - opens email client with pre-filled message
     function handleBetaSubmit(e) {
       e.preventDefault();
       const form = e.target;
       const data = new FormData(form);
       
-      // Simulate submission (replace with real endpoint)
+      const name = data.get('name') || '';
+      const email = data.get('email') || '';
+      const deviceMap = { 'iphone': 'iPhone (iOS)', 'android': 'Android', 'both': 'Entrambi' };
+      const device = deviceMap[data.get('device')] || data.get('device') || 'Non specificato';
+      const freqMap = { 'daily': 'Ogni giorno', 'weekly': 'Qualche volta a settimana', 'monthly': 'Qualche volta al mese' };
+      const frequency = freqMap[data.get('frequency')] || data.get('frequency') || 'Non specificato';
+      const message = data.get('message') || 'Nessun messaggio aggiuntivo';
+      
+      const subject = encodeURIComponent('Candidatura Beta Tester - Effetto Cinematografo App');
+      const body = encodeURIComponent(
+        `Ciao,\n\nvorrei candidarmi come Beta Tester per l'app Effetto Cinematografo.\n\n` +
+        `--- RIEPILOGO CANDIDATURA ---\n\n` +
+        `Nome: ${name}\n` +
+        `Email: ${email}\n` +
+        `Dispositivo: ${device}\n` +
+        `Frequenza visione film/serie: ${frequency}\n` +
+        `Motivazione: ${message}\n\n` +
+        `--- FINE RIEPILOGO ---\n\n` +
+        `Resto in attesa di ricevere le istruzioni per accedere alla beta.\n\n` +
+        `Grazie,\n${name}`
+      );
+      
+      window.location.href = `mailto:effettocinematografo@gmail.com?subject=${subject}&body=${body}`;
+      
+      // Show success message
       form.style.display = 'none';
       document.getElementById('formSuccess').classList.add('show');
-      
-      // Optional: send to Formspree or similar
-      fetch('https://formspree.io/f/xpwzgkqr', {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      }).catch(() => {});
     }
 
     // Smooth scroll for anchor links
